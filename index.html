@@ -1,588 +1,354 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SS ENGINE | Creative Studio</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-body{
-    background:#080d18;
-    color:#fff;
-    font-family:Arial,sans-serif;
-}
-
-/* HEADER */
-
-header{
-    height:75px;
-    background:#101827;
-    border-bottom:1px solid #26344b;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 35px;
-}
-
-.logo{
-    font-size:27px;
-    font-weight:900;
-    letter-spacing:2px;
-}
-
-.logo span{
-    color:#38bdf8;
-}
-
-.header-right{
-    display:flex;
-    align-items:center;
-    gap:25px;
-    color:#a5b4ca;
-    font-size:13px;
-}
-
-.profile{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    background:#1c3452;
-    display:grid;
-    place-items:center;
-    font-weight:bold;
-}
-
-/* SIDEBAR */
-
-.layout{
-    display:flex;
-    min-height:calc(100vh - 75px);
-}
-
-.sidebar{
-    width:220px;
-    background:#0d1524;
-    border-right:1px solid #26344b;
-    padding:28px 15px;
-    flex-shrink:0;
-}
-
-.side-title{
-    color:#71829c;
-    font-size:11px;
-    margin:10px 12px 18px;
-    letter-spacing:2px;
-}
-
-.nav{
-    padding:14px;
-    border-radius:9px;
-    margin-bottom:8px;
-    color:#b7c5d8;
-    font-size:13px;
-    cursor:pointer;
-}
-
-.nav.active{
-    background:#173452;
-    color:#38bdf8;
-}
-
-.nav:hover{
-    background:#17263b;
-}
-
-/* MAIN */
-
-main{
-    flex:1;
-    min-width:0;
-    padding:40px;
-}
-
-.welcome{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:35px;
-    gap:15px;
-}
-
-.welcome h1{
-    font-size:32px;
-    margin-bottom:10px;
-}
-
-.welcome p{
-    color:#8999b0;
-    font-size:14px;
-}
-
-.version{
-    padding:10px 15px;
-    border:1px solid #263b55;
-    border-radius:8px;
-    color:#38bdf8;
-    font-size:12px;
-}
-
-/* ENGINE GRID */
-
-.engine-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:24px;
-}
-
-.engine{
-    background:linear-gradient(145deg,#152137,#0e1727);
-    border:1px solid #2a3c57;
-    border-radius:17px;
-    overflow:hidden;
-    transition:.25s;
-}
-
-.engine:hover{
-    transform:translateY(-5px);
-    border-color:#38bdf8;
-    box-shadow:0 12px 35px #0005;
-}
-
-.engine-top{
-    padding:23px;
-    display:flex;
-    align-items:center;
-    gap:17px;
-    border-bottom:1px solid #293b55;
-}
-
-.icon{
-    width:62px;
-    height:62px;
-    border-radius:15px;
-    background:#203650;
-    display:grid;
-    place-items:center;
-    font-size:34px;
-}
-
-.engine-top h2{
-    font-size:19px;
-    margin-bottom:7px;
-}
-
-.engine-top p{
-    color:#91a2ba;
-    font-size:12px;
-}
-
-.tools{
-    padding:17px 22px;
-    display:flex;
-    gap:9px;
-    flex-wrap:wrap;
-}
-
-.tool{
-    background:#1c2b42;
-    border:1px solid #30445f;
-    padding:9px 12px;
-    border-radius:7px;
-    font-size:11px;
-    color:#c6d6e9;
-}
-
-.preview{
-    height:150px;
-    margin:0 22px;
-    background:#091322;
-    border:1px solid #263b56;
-    border-radius:11px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap:12px;
-}
-
-.preview-icon{
-    font-size:43px;
-}
-
-.preview p{
-    font-size:12px;
-    color:#9aabc2;
-}
-
-.engine-bottom{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:20px 22px;
-}
-
-.status{
-    color:#42d9a1;
-    font-size:11px;
-}
-
-.open-btn{
-    background:#167dc5;
-    color:white;
-    border:0;
-    padding:11px 18px;
-    border-radius:8px;
-    font-weight:bold;
-    font-size:11px;
-    cursor:pointer;
-}
-
-.open-btn:hover{
-    background:#259eea;
-}
-
-footer{
-    margin-top:35px;
-    padding:22px;
-    border-top:1px solid #26344b;
-    text-align:center;
-    color:#718099;
-    font-size:11px;
-}
-
-/* TABLET */
-
-@media(max-width:950px){
-    .sidebar{
-        width:180px;
-    }
-
-    main{
-        padding:25px;
-    }
-}
-
-/* MOBILE */
-
-@media(max-width:600px){
-
-    header{
-        height:62px;
-        padding:0 13px;
-    }
-
-    .logo{
-        font-size:21px;
-    }
-
-    .header-right{
-        gap:8px;
-        font-size:9px;
-    }
-
-    .profile{
-        width:33px;
-        height:33px;
-    }
-
-    .layout{
-        display:block;
-    }
-
-    .sidebar{
-        display:none;
-    }
-
-    main{
-        padding:22px 11px;
-    }
-
-    .welcome{
-        margin-bottom:23px;
-    }
-
-    .welcome h1{
-        font-size:23px;
-    }
-
-    .welcome p{
-        font-size:11px;
-    }
-
-    .version{
-        font-size:9px;
-        padding:7px;
-    }
-
-    .engine-grid{
-        grid-template-columns:repeat(2,minmax(0,1fr));
-        gap:11px;
-    }
-
-    .engine-top{
-        padding:12px 9px;
-        gap:8px;
-    }
-
-    .icon{
-        width:39px;
-        height:39px;
-        font-size:22px;
-        border-radius:9px;
-    }
-
-    .engine-top h2{
-        font-size:12px;
-    }
-
-    .engine-top p{
-        font-size:9px;
-    }
-
-    .tools{
-        padding:9px;
-        gap:5px;
-    }
-
-    .tool{
-        padding:6px 7px;
-        font-size:9px;
-    }
-
-    .preview{
-        height:100px;
-        margin:0 8px;
-        gap:7px;
-    }
-
-    .preview-icon{
-        font-size:27px;
-    }
-
-    .preview p{
-        font-size:9px;
-        text-align:center;
-    }
-
-    .engine-bottom{
-        padding:10px 8px;
-        gap:4px;
-    }
-
-    .status{
-        font-size:8px;
-    }
-
-    .open-btn{
-        padding:8px 7px;
-        font-size:8px;
-    }
-
-    footer{
-        font-size:9px;
-    }
-}
+*{box-sizing:border-box}
+body{margin:0;background:#071426;color:#fff;font-family:Arial,sans-serif}
+header{height:65px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:#0b1c34;border-bottom:1px solid #203957}
+.logo{font-size:23px;font-weight:900;color:#42a5ff}
+button{border:0;padding:10px 14px;border-radius:8px;background:#1678dc;color:white;font-weight:bold;cursor:pointer}
+button:hover{background:#3297ff}
+.secondary{background:#263b56}
+.home{padding:25px;max-width:1200px;margin:auto}
+.hero{text-align:center;margin:35px 0}
+.hero h1{font-size:35px;margin:10px}
+.hero p{color:#9db4d0}
+.version{color:#49aaff;font-size:12px;letter-spacing:3px}
+.engine-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.engine-card{background:#10243e;border:1px solid #244364;border-radius:15px;overflow:hidden;cursor:pointer;transition:.2s}
+.engine-card:hover{transform:translateY(-4px);border-color:#39a2ff}
+.card-image{height:190px;background-size:cover;background-position:center;position:relative}
+.card-image:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent,#071426)}
+.image-label{position:absolute;z-index:1;bottom:14px;left:17px;font-size:12px;letter-spacing:2px;font-weight:bold}
+.card-content{padding:17px}
+.card-content h2{margin:0 0 8px;font-size:20px}
+.card-content p{color:#a9bdd4;font-size:13px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0}
+.tag{background:#1c3859;padding:6px 9px;border-radius:6px;font-size:11px;color:#b9d9fa}
+.card-bottom{display:flex;justify-content:space-between;align-items:center}
+.ready{color:#43d69a;font-size:12px}
+.app-image{background:#f4f6fb;display:flex;align-items:center;justify-content:center}
+.app-image:after{display:none}
+.app-logo{width:100px;height:100px;border-radius:20px;background:#ed2525;color:#0878e8;display:flex;align-items:center;justify-content:center;font-size:39px;font-weight:1000;letter-spacing:2px;border:3px solid #ff7777;box-shadow:0 8px 30px #0003}
+.workspace{display:none;padding:15px;max-width:1500px;margin:auto}
+.workspace-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:15px}
+.workspace-layout{display:grid;grid-template-columns:220px minmax(0,1fr) 230px;gap:12px}
+.panel{background:#10243e;border:1px solid #294563;border-radius:10px;padding:12px;min-width:0;margin-bottom:12px}
+.panel h3{font-size:14px;color:#70baff;margin:4px 0 13px}
+.tool-button{display:block;width:100%;text-align:left;margin:6px 0;background:#1a3554;font-size:12px}
+.tool-button.active{background:#1678dc}
+input,select,textarea{width:100%;padding:9px;margin:5px 0 12px;border-radius:6px;border:1px solid #36516d;background:#091a2e;color:white}
+textarea{min-height:110px;resize:vertical}
+label{font-size:12px;color:#b6cbe1}
+canvas{width:100%;height:auto;display:block;background:#172b42;border:1px solid #34516e;border-radius:8px;touch-action:none}
+.canvas-actions{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0}
+.canvas-actions button{font-size:11px;padding:9px}
+.object-item,.library-item{padding:9px;margin:5px 0;background:#1b3858;border-radius:6px;font-size:12px;cursor:pointer}
+.object-item.selected{background:#1678dc}
+.library-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));gap:8px}
+.library-item{text-align:center}
+.status{font-size:12px;color:#56dca8;margin-top:10px}
+.output{white-space:pre-wrap;background:#091a2e;border-radius:8px;padding:12px;font-size:13px;min-height:45px;overflow:auto}
+#preview{display:none;position:fixed;inset:0;background:#071426;z-index:10;padding:15px;overflow:auto}
+#playCanvas{max-height:75vh}
+.hidden{display:none!important}
+@media(max-width:850px){.workspace-layout{grid-template-columns:1fr}.engine-grid{gap:12px}.card-image{height:130px}}
+@media(max-width:500px){.engine-grid{grid-template-columns:1fr}.hero h1{font-size:27px}header{padding:0 12px}}
 </style>
 </head>
 
 <body>
-
 <header>
-
-    <div class="logo">SS <span>ENGINE</span></div>
-
-    <div class="header-right">
-        <span>● SYSTEM ONLINE</span>
-        <div class="profile">SS</div>
-    </div>
-
+ <div class="logo">SS ENGINE</div>
+ <button class="secondary" onclick="goHome()">HOME</button>
 </header>
 
-<div class="layout">
+<main id="home" class="home">
+ <div class="hero">
+  <div class="version">VERSION 1.0</div>
+  <h1>Creative Studio</h1>
+  <p>Welcome to SS Engine. Build Something Amazing.</p>
+ </div>
 
-<!-- SIDEBAR -->
+ <div class="engine-grid">
+  <div class="engine-card" onclick="openEngine('GAME')">
+   <div class="card-image" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1000')">
+    <div class="image-label">GAME DEVELOPMENT</div>
+   </div>
+   <div class="card-content">
+    <h2>GAME ENGINE</h2><p>Game Development Studio</p>
+    <div class="tags"><span class="tag">2D Editor</span><span class="tag">3D Assets</span><span class="tag">Physics</span><span class="tag">World Builder</span></div>
+    <div class="card-bottom"><span class="ready">● READY</span><button>OPEN ENGINE</button></div>
+   </div>
+  </div>
 
-<aside class="sidebar">
+  <div class="engine-card" onclick="openEngine('AI')">
+   <div class="card-image" style="background-image:url('https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1000')">
+    <div class="image-label">ARTIFICIAL INTELLIGENCE</div>
+   </div>
+   <div class="card-content">
+    <h2>AI ENGINE</h2><p>Artificial Intelligence Studio</p>
+    <div class="tags"><span class="tag">AI Chat</span><span class="tag">Research</span><span class="tag">AI Tools</span><span class="tag">Datasets</span></div>
+    <div class="card-bottom"><span class="ready">● READY</span><button>OPEN ENGINE</button></div>
+   </div>
+  </div>
 
-    <div class="side-title">MAIN MENU</div>
+  <div class="engine-card" onclick="openEngine('APP')">
+   <div class="card-image app-image">
+    <div class="app-logo">SS</div>
+    <div class="image-label" style="color:#172b42">APPLICATION DEVELOPMENT</div>
+   </div>
+   <div class="card-content">
+    <h2>APP ENGINE</h2><p>Application Development Studio</p>
+    <div class="tags"><span class="tag">UI Designer</span><span class="tag">Components</span><span class="tag">Code Editor</span><span class="tag">Testing</span></div>
+    <div class="card-bottom"><span class="ready">● READY</span><button>OPEN ENGINE</button></div>
+   </div>
+  </div>
 
-    <div class="nav active">⌂ &nbsp; Dashboard</div>
-    <div class="nav">🎮 &nbsp; Game Engine</div>
-    <div class="nav">🤖 &nbsp; AI Engine</div>
-    <div class="nav">📱 &nbsp; App Engine</div>
-    <div class="nav">🧠 &nbsp; Model Engine</div>
-
-    <div class="side-title">SYSTEM</div>
-
-    <div class="nav">⚙ &nbsp; Settings</div>
-    <div class="nav">ⓘ &nbsp; About</div>
-
-</aside>
-
-<!-- MAIN DASHBOARD -->
-
-<main>
-
-    <section class="welcome">
-
-        <div>
-            <h1>Creative Studio</h1>
-            <p>Welcome to SS Engine. Build Something Amazing.</p>
-        </div>
-
-        <div class="version">VERSION 1.0</div>
-
-    </section>
-
-    <section class="engine-grid">
-
-        <!-- GAME ENGINE -->
-
-        <div class="engine">
-
-            <div class="engine-top">
-                <div class="icon">🎮</div>
-
-                <div>
-                    <h2>GAME ENGINE</h2>
-                    <p>Game Development Studio</p>
-                </div>
-            </div>
-
-            <div class="tools">
-                <span class="tool">3D Editor</span>
-                <span class="tool">Characters</span>
-                <span class="tool">Physics</span>
-            </div>
-
-            <div class="preview">
-                <div class="preview-icon">🌍</div>
-                <p>Game Development Workspace</p>
-            </div>
-
-            <div class="engine-bottom">
-                <span class="status">● READY</span>
-                <button class="open-btn" onclick="openEngine('GAME ENGINE')">OPEN ENGINE →</button>
-            </div>
-
-        </div>
-
-        <!-- AI ENGINE -->
-
-        <div class="engine">
-
-            <div class="engine-top">
-                <div class="icon">🤖</div>
-
-                <div>
-                    <h2>AI ENGINE</h2>
-                    <p>Artificial Intelligence Studio</p>
-                </div>
-            </div>
-
-            <div class="tools">
-                <span class="tool">AI Builder</span>
-                <span class="tool">AI Tools</span>
-                <span class="tool">Training</span>
-            </div>
-
-            <div class="preview">
-                <div class="preview-icon">⚡</div>
-                <p>AI Development Workspace</p>
-            </div>
-
-            <div class="engine-bottom">
-                <span class="status">● READY</span>
-                <button class="open-btn" onclick="openEngine('AI ENGINE')">OPEN ENGINE →</button>
-            </div>
-
-        </div>
-
-        <!-- APP ENGINE -->
-
-        <div class="engine">
-
-            <div class="engine-top">
-                <div class="icon">📱</div>
-
-                <div>
-                    <h2>APP ENGINE</h2>
-                    <p>Application Development Studio</p>
-                </div>
-            </div>
-
-            <div class="tools">
-                <span class="tool">UI Designer</span>
-                <span class="tool">Components</span>
-                <span class="tool">Code</span>
-            </div>
-
-            <div class="preview">
-                <div class="preview-icon">📲</div>
-                <p>App Development Workspace</p>
-            </div>
-
-            <div class="engine-bottom">
-                <span class="status">● READY</span>
-                <button class="open-btn" onclick="openEngine('APP ENGINE')">OPEN ENGINE →</button>
-            </div>
-
-        </div>
-
-        <!-- MODEL ENGINE -->
-
-        <div class="engine">
-
-            <div class="engine-top">
-                <div class="icon">🧠</div>
-
-                <div>
-                    <h2>MODEL ENGINE</h2>
-                    <p>AI Model Development Studio</p>
-                </div>
-            </div>
-
-            <div class="tools">
-                <span class="tool">Model Builder</span>
-                <span class="tool">Training</span>
-                <span class="tool">Testing</span>
-            </div>
-
-            <div class="preview">
-                <div class="preview-icon">🧬</div>
-                <p>Model Development Workspace</p>
-            </div>
-
-            <div class="engine-bottom">
-                <span class="status">● READY</span>
-                <button class="open-btn" onclick="openEngine('MODEL ENGINE')">OPEN ENGINE →</button>
-            </div>
-
-        </div>
-
-    </section>
-
-    <footer>
-        SS ENGINE © 2026 | FOUR ENGINES ONE PLATFORM
-    </footer>
-
+  <div class="engine-card" onclick="openEngine('MODEL')">
+   <div class="card-image" style="background-image:url('https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=1000')">
+    <div class="image-label">MODEL DEVELOPMENT</div>
+   </div>
+   <div class="card-content">
+    <h2>MODEL ENGINE</h2><p>AI & 3D Model Development Studio</p>
+    <div class="tags"><span class="tag">3D Builder</span><span class="tag">AI Models</span><span class="tag">Chat Models</span><span class="tag">Export</span></div>
+    <div class="card-bottom"><span class="ready">● READY</span><button>OPEN ENGINE</button></div>
+   </div>
+  </div>
+ </div>
 </main>
+
+<section id="workspace" class="workspace">
+ <div class="workspace-top">
+  <div><h2 id="workspaceTitle">GAME ENGINE</h2><div style="color:#9db4d0;font-size:12px">SS ENGINE DEVELOPMENT WORKSPACE</div></div>
+  <button class="secondary" onclick="goHome()">← BACK</button>
+ </div>
+
+ <!-- GAME ENGINE -->
+ <div id="gameEditor" class="workspace-layout hidden">
+  <aside class="panel">
+   <h3>GAME DEVELOPMENT</h3>
+   <button class="tool-button" onclick="newGame()">New Game Project</button>
+   <button class="tool-button" onclick="saveGame()">Save Project</button>
+   <button class="tool-button" onclick="loadGame()">Open Project</button>
+   <button class="tool-button" onclick="exportGame()">Export Project JSON</button>
+   <hr>
+   <h3>SCENE TOOLS</h3>
+   <button class="tool-button" onclick="setGameMode('select')">Select Object</button>
+   <button class="tool-button" onclick="setGameMode('move')">Move Object</button>
+   <button class="tool-button" onclick="setGameMode('resize')">Resize Object</button>
+   <button class="tool-button" onclick="addGameObject('Player')">Create Player</button>
+   <button class="tool-button" onclick="addGameObject('Platform')">Create Platform</button>
+   <button class="tool-button" onclick="addGameObject('Enemy')">Create Enemy</button>
+   <button class="tool-button" onclick="addGameObject('Rectangle')">Create Rectangle</button>
+   <button class="tool-button" onclick="addGameObject('Circle')">Create Circle</button>
+   <button class="tool-button" onclick="addGameObject('Triangle')">Create Triangle</button>
+   <button class="tool-button" onclick="duplicateGameObject()">Duplicate</button>
+   <button class="tool-button" onclick="deleteGameObject()">Delete</button>
+   <button class="tool-button" onclick="clearGame()">Clear Scene</button>
+   <hr>
+   <h3>MODEL ENGINE CONNECTION</h3>
+   <button class="tool-button" onclick="openEngine('MODEL')">Open Model Engine</button>
+   <button class="tool-button" onclick="importModelToGame()">Import Saved Model</button>
+   <input id="modelFile" type="file" accept=".json,.obj,.gltf,.glb" onchange="importModelFile(event)">
+   <div class="status" id="gameStatus">● GAME ENGINE READY</div>
+  </aside>
+
+  <section class="panel">
+   <h3>GAME SCENE</h3>
+   <canvas id="gameCanvas" width="900" height="520"></canvas>
+   <div class="canvas-actions">
+    <button onclick="toggleGameGrid()">Grid</button>
+    <button onclick="playGame()">▶ PLAY</button>
+    <button class="secondary" onclick="stopGame()">STOP</button>
+   </div>
+   <h3>MAP & WORLD LIBRARY</h3>
+   <div class="library-grid">
+    <div class="library-item" onclick="addGameObject('Ground')">Ground</div>
+    <div class="library-item" onclick="addGameObject('Mountain')">Mountain</div>
+    <div class="library-item" onclick="addGameObject('Road')">Road</div>
+    <div class="library-item" onclick="addGameObject('River')">River</div>
+    <div class="library-item" onclick="addGameObject('Tree')">Tree</div>
+    <div class="library-item" onclick="addGameObject('Building')">Building</div>
+    <div class="library-item" onclick="addGameObject('Water')">Water</div>
+    <div class="library-item" onclick="addGameObject('House')">House</div>
+   </div>
+   <label>Map / Country Name</label>
+   <input id="mapName" placeholder="जैसे India, Japan, USA">
+   <button onclick="createCountryMap()">Create Map Layout</button>
+   <p style="font-size:11px;color:#9db4d0">यह Map Layout Editor है। वास्तविक देशों की सीमाओं के लिए अलग map-data file import करनी होगी।</p>
+  </section>
+
+  <aside class="panel">
+   <h3>SCENE HIERARCHY</h3>
+   <div id="gameHierarchy"></div>
+   <hr>
+   <h3>OBJECT INSPECTOR</h3>
+   <label>Name</label><input id="gName" onchange="editGameObject('name',this.value)">
+   <label>Color</label><input id="gColor" type="color" onchange="editGameObject('color',this.value)">
+   <label>X</label><input id="gX" type="number" onchange="editGameObject('x',this.value)">
+   <label>Y</label><input id="gY" type="number" onchange="editGameObject('y',this.value)">
+   <label>Width</label><input id="gW" type="number" onchange="editGameObject('w',this.value)">
+   <label>Height</label><input id="gH" type="number" onchange="editGameObject('h',this.value)">
+   <label>Background</label><input id="gBG" type="color" value="#172b42" onchange="gameBG=this.value;drawGame()">
+   <label>Gravity</label>
+   <select id="gGravity"><option value="0">Off</option><option value=".3">Low</option><option value=".7" selected>Normal</option><option value="1.5">High</option></select>
+  </aside>
+ </div>
+
+ <!-- AI ENGINE -->
+ <div id="aiEditor" class="workspace-layout hidden">
+  <aside class="panel">
+   <h3>AI TOOLS</h3>
+   <button class="tool-button" onclick="aiMode='chat'">AI Chat</button>
+   <button class="tool-button" onclick="aiMode='research'">Research Assistant</button>
+   <button class="tool-button" onclick="aiMode='prompt'">Prompt Builder</button>
+   <button class="tool-button" onclick="aiMode='dataset'">Dataset Notes</button>
+   <p class="status">LOCAL DEMO ASSISTANT</p>
+  </aside>
+  <section class="panel">
+   <h3>AI WORKSPACE</h3>
+   <p style="font-size:12px;color:#a9bdd4">यह ऑफलाइन नियम-आधारित सहायक और प्रॉम्प्ट वर्कस्पेस है। असली AI मॉडल के जवाब के लिए लोकल मॉडल रनटाइम या AI सर्वर कनेक्शन चाहिए।</p>
+   <label>अपना सवाल या निर्देश लिखें</label>
+   <textarea id="aiQuestion" placeholder="अपना सवाल लिखें..."></textarea>
+   <button onclick="runLocalAI()">Run Assistant</button>
+   <button class="secondary" onclick="saveAIText()">Save Notes</button>
+   <h3>RESULT</h3><div id="aiResult" class="output">AI result यहाँ दिखाई देगा।</div>
+  </section>
+  <aside class="panel">
+   <h3>AI PROJECTS</h3>
+   <label>Project Name</label><input id="aiProjectName" placeholder="My AI Project">
+   <button onclick="saveAIProject()">Save AI Project</button>
+   <button class="tool-button" onclick="downloadAIProject()">Export AI Notes</button>
+   <div id="aiProjects"></div>
+  </aside>
+ </div>
+
+ <!-- APP ENGINE -->
+ <div id="appEditor" class="workspace-layout hidden">
+  <aside class="panel">
+   <h3>APP BUILDER</h3>
+   <button class="tool-button" onclick="addAppElement('Heading')">Add Heading</button>
+   <button class="tool-button" onclick="addAppElement('Text')">Add Text</button>
+   <button class="tool-button" onclick="addAppElement('Button')">Add Button</button>
+   <button class="tool-button" onclick="addAppElement('Input')">Add Input</button>
+   <button class="tool-button" onclick="addAppElement('Card')">Add Card</button>
+   <button class="tool-button" onclick="addAppElement('Image')">Add Image</button>
+   <button class="tool-button" onclick="deleteAppElement()">Delete Selected</button>
+   <button class="tool-button" onclick="exportApp()">Export HTML App</button>
+   <button class="tool-button" onclick="saveApp()">Save App Project</button>
+  </aside>
+  <section class="panel">
+   <h3>APP DESIGN WORKSPACE</h3>
+   <label>App Name</label><input id="appName" value="My SS App">
+   <div id="appPreview" style="background:#f5f7fb;color:#18283d;min-height:360px;border-radius:10px;padding:18px">
+    <h2>My SS App</h2><p>Start building your application.</p>
+   </div>
+  </section>
+  <aside class="panel">
+   <h3>APP COMPONENTS</h3>
+   <div id="appHierarchy"></div>
+   <label>Selected Text</label><input id="appText" onchange="editAppText(this.value)">
+   <label>Text Color</label><input id="appColor" type="color" value="#18283d" onchange="editAppColor(this.value)">
+  </aside>
+ </div>
+
+ <!-- MODEL ENGINE -->
+ <div id="modelEditor" class="workspace-layout hidden">
+  <aside class="panel">
+   <h3>MODEL CREATION</h3>
+   <button class="tool-button" onclick="addModel('Cube')">Create Cube</button>
+   <button class="tool-button" onclick="addModel('Sphere')">Create Sphere</button>
+   <button class="tool-button" onclick="addModel('Cylinder')">Create Cylinder</button>
+   <button class="tool-button" onclick="addModel('Pyramid')">Create Pyramid</button>
+   <button class="tool-button" onclick="addModel('Character')">Character Placeholder</button>
+   <button class="tool-button" onclick="deleteModel()">Delete Model</button>
+   <button class="tool-button" onclick="saveModel()">Save to Model Library</button>
+   <button class="tool-button" onclick="exportModel()">Export Model JSON</button>
+   <hr>
+   <h3>AI MODEL WORKSPACE</h3>
+   <button class="tool-button" onclick="showModelInfo('Chat Model')">Chat Model Project</button>
+   <button class="tool-button" onclick="showModelInfo('Research Model')">Research Model Project</button>
+   <button class="tool-button" onclick="showModelInfo('Text Model')">Text Model Project</button>
+   <button class="tool-button" onclick="showModelInfo('Custom Model')">Custom AI Model Project</button>
+   <p class="status">3D ASSET EDITOR + AI MODEL PROJECTS</p>
+  </aside>
+
+  <section class="panel">
+   <h3>MODEL EDITOR</h3>
+   <canvas id="modelCanvas" width="900" height="520"></canvas>
+   <div class="canvas-actions">
+    <button onclick="rotateModel(-10)">Rotate Left</button>
+    <button onclick="rotateModel(10)">Rotate Right</button>
+    <button onclick="scaleModel(1.1)">Scale +</button>
+    <button onclick="scaleModel(.9)">Scale -</button>
+   </div>
+   <h3>MY MODEL LIBRARY</h3>
+   <div id="modelLibrary" class="library-grid"></div>
+  </section>
+
+  <aside class="panel">
+   <h3>MODEL INSPECTOR</h3>
+   <label>Model Name</label><input id="mName" onchange="editModel('name',this.value)">
+   <label>Color</label><input id="mColor" type="color" onchange="editModel('color',this.value)">
+   <label>Size</label><input id="mSize" type="number" onchange="editModel('size',this.value)">
+   <h3>IMPORT MODEL</h3>
+   <input type="file" accept=".json,.obj,.gltf,.glb" onchange="importModelFile(event)">
+   <p style="font-size:11px;color:#9db4d0">इस संस्करण में JSON मॉडल प्रोजेक्ट सीधे सेव/लोड होते हैं। OBJ/GLB/glTF की पूर्ण 3D रेंडरिंग के लिए अलग स्थानीय 3D importer की जरूरत है।</p>
+   <button class="tool-button" onclick="sendModelToGame()">Add Selected Model to Game</button>
+   <div id="modelInfo" class="output">Model details यहाँ दिखेंगे।</div>
+  </aside>
+ </div>
+</section>
+
+<div id="preview">
+ <div style="display:flex;justify-content:space-between;align-items:center">
+  <h2>GAME PREVIEW</h2><button onclick="stopGame()">STOP GAME</button>
+ </div>
+ <canvas id="playCanvas" width="900" height="520"></canvas>
+ <p style="color:#a9bdd4">Keyboard: A/D or arrow keys to move. Space to jump.</p>
 </div>
 
 <script>
+const $=id=>document.getElementById(id);
+let currentEngine="GAME";
 
+/* ENGINE NAVIGATION */
 function openEngine(name){
-    alert(name + " workspace will be developed next.");
+ currentEngine=name;
+ $("home").style.display="none";
+ $("workspace").style.display="block";
+ $("workspaceTitle").textContent=name+" ENGINE";
+ ["gameEditor","aiEditor","appEditor","modelEditor"].forEach(id=>$(id).classList.add("hidden"));
+ const ids={GAME:"gameEditor",AI:"aiEditor",APP:"appEditor",MODEL:"modelEditor"};
+ $(ids[name]).classList.remove("hidden");
 }
+function goHome(){stopGame();$("workspace").style.display="none";$("home").style.display="block"}
 
-</script>
-
-</body>
-  </html>
+/* GAME ENGINE */
+let gameObjects=[],gameSelected=-1,gameMode="select",gameGrid=true,gameBG="#172b42";
+const gc=$("gameCanvas"),gctx=gc.getContext("2d");
+function gameStatus(t){$("gameStatus").textContent="● "+t}
+function addGameObject(type,x,y){
+ const colors={Player:"#ffcf42",Platform:"#8d9eb3",Enemy:"#ff5252",Circle:"#35d6a0",Triangle:"#ffbd4a",Ground:"#738c63",Mountain:"#8293a8",Road:"#454b55",River:"#258fd0",Tree:"#2caa69",Building:"#bd9c78",Water:"#258fd0",House:"#c69b70"};
+ const o={name:type+" "+(gameObjects.length+1),type,x:x??370,y:y??220,w: type==="Platform"||type==="Road"?150:65,h:type==="Platform"||type==="Road"?22:65,color:colors[type]||"#39a2ff"};
+ gameObjects.push(o);gameSelected=gameObjects.length-1;updateGame();
+}
+function drawGame(){
+ gctx.clearRect(0,0,gc.width,gc.height);gctx.fillStyle=gameBG;gctx.fillRect(0,0,gc.width,gc.height);
+ if(gameGrid){gctx.strokeStyle="#ffffff13";for(let x=0;x<gc.width;x+=30){gctx.beginPath();gctx.moveTo(x,0);gctx.lineTo(x,gc.height);gctx.stroke()}for(let y=0;y<gc.height;y+=30){gctx.beginPath();gctx.moveTo(0,y);gctx.lineTo(gc.width,y);gctx.stroke()}}
+ gameObjects.forEach((o,i)=>{gctx.fillStyle=o.color;gctx.strokeStyle=i===gameSelected?"white":"#071426";gctx.lineWidth=i===gameSelected?3:1;
+ if(o.type==="Circle"){gctx.beginPath();gctx.ellipse(o.x+o.w/2,o.y+o.h/2,o.w/2,o.h/2,0,0,Math.PI*2);gctx.fill();gctx.stroke()}
+ else if(o.type==="Triangle"||o.type==="Mountain"){gctx.beginPath();gctx.moveTo(o.x+o.w/2,o.y);gctx.lineTo(o.x+o.w,o.y+o.h);gctx.lineTo(o.x,o.y+o.h);gctx.closePath();gctx.fill();gctx.stroke()}
+ else{gctx.fillRect(o.x,o.y,o.w,o.h);gctx.strokeRect(o.x,o.y,o.w,o.h)}
+ if(i===gameSelected){gctx.setLineDash([5,4]);gctx.strokeRect(o.x-5,o.y-5,o.w+10,o.h+10);gctx.setLineDash([])}
+ });
+}
+function updateGame(){
+ drawGame();$("gameHierarchy").innerHTML="";
+ gameObjects.forEach((o,i)=>{let d=document.createElement("div");d.className="object-item "+(i===gameSelected?"selected":"");d.textContent="▰ "+o.name;d.onclick=()=>{gameSelected=i;updateGame()};$("gameHierarchy").appendChild(d)});
+ let o=gameObjects[gameSelected];["gName","gColor
