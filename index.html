@@ -351,4 +351,641 @@ function drawGame(){
 function updateGame(){
  drawGame();$("gameHierarchy").innerHTML="";
  gameObjects.forEach((o,i)=>{let d=document.createElement("div");d.className="object-item "+(i===gameSelected?"selected":"");d.textContent="▰ "+o.name;d.onclick=()=>{gameSelected=i;updateGame()};$("gameHierarchy").appendChild(d)});
- let o=gameObjects[gameSelected];["gName","gColor
+ let o=gameObjects[gameSelected];
+ const fields=["gName","gColor","gX","gY","gW","gH"];
+ if(!o){
+  fields.forEach(id=>$(id).value="");
+  return;
+ }
+ $("gName").value=o.name;
+ $("gColor").value=o.color;
+ $("gX").value=o.x;
+ $("gY").value=o.y;
+ $("gW").value=o.w;
+ $("gH").value=o.h;
+}
+
+function editGameObject(key,value){
+ let o=gameObjects[gameSelected];
+ if(!o)return;
+ const keys={name:"name",color:"color",x:"x",y:"y",w:"w",h:"h"};
+ let k=keys[key];
+ if(k==="name"||k==="color")o[k]=value;
+ else if(k)o[k]=Number(value);
+ updateGame();
+}
+
+function setGameMode(mode){
+ gameMode=mode;
+ gameStatus("MODE: "+mode.toUpperCase());
+}
+
+function duplicateGameObject(){
+ let o=gameObjects[gameSelected];
+ if(!o)return;
+ let copy={...o,x:o.x+25,y:o.y+25,name:o.name+" Copy"};
+ gameObjects.push(copy);
+ gameSelected=gameObjects.length-1;
+ updateGame();
+}
+
+function deleteGameObject(){
+ if(gameSelected<0)return;
+ gameObjects.splice(gameSelected,1);
+ gameSelected=Math.min(gameSelected,gameObjects.length-1);
+ updateGame();
+}
+
+function clearGame(){
+ if(!confirm("क्या आप पूरा Scene साफ करना चाहते हैं?"))return;
+ gameObjects=[];
+ gameSelected=-1;
+ updateGame();
+}
+
+function toggleGameGrid(){
+ gameGrid=!gameGrid;
+ drawGame();
+}
+
+function newGame(){
+ if(!confirm("नया Game Project शुरू करें?"))return;
+ gameObjects=[];
+ gameSelected=-1;
+ updateGame();
+ gameStatus("NEW PROJECT CREATED");
+}
+
+function saveGame(){
+ localStorage.setItem("SS_GAME_PROJECT",JSON.stringify(gameObjects));
+ gameStatus("PROJECT SAVED");
+}
+
+function loadGame(){
+ let data=localStorage.getItem("SS_GAME_PROJECT");
+ if(!data){
+  gameStatus("NO SAVED PROJECT");
+  return;
+ }
+ try{
+  gameObjects=JSON.parse(data);
+  gameSelected=gameObjects.length?0:-1;
+  updateGame();
+  gameStatus("PROJECT LOADED");
+ }catch(e){
+  gameStatus("PROJECT LOAD ERROR");
+ }
+}
+
+function downloadFile(filename,content,type="application/json"){
+ let blob=new Blob([content],{type});
+ let url=URL.createObjectURL(blob);
+ let a=document.createElement("a");
+ a.href=url;
+ a.download=filename;
+ a.click();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+
+function exportGame(){
+ downloadFile("SS-Game-Project.json",JSON.stringify(gameObjects,null,2));
+ gameStatus("PROJECT EXPORTED");
+}
+
+/* GAME MAP LAYOUT */
+function createCountryMap(){
+ let name=$("mapName").value.trim();
+ if(!name){
+  alert("Country या Map का नाम लिखें");
+  return;
+ }
+ addGameObject("Ground",100,390);
+ addGameObject("Mountain",300,180);
+ addGameObject("River",420,300);
+ addGameObject("Tree",550,300);
+ gameStatus(name+" MAP LAYOUT CREATED");
+}
+
+/* GAME MOUSE AND TOUCH */
+let gameDragging=false;
+let dragOffset={x:0,y:0};
+
+gc.addEventListener("pointerdown",e=>{
+ let r=gc.getBoundingClientRect();
+ let x=(e.clientX-r.left)*gc.width/r.width;
+ let y=(e.clientY-r.top)*gc.height/r.height;
+
+ for(let i=gameObjects.length-1;i>=0;i--){
+  let o=gameObjects[i];
+  if(x>=o.x&&x<=o.x+o.w&&y>=o.y&&y<=o.y+o.h){
+   gameSelected=i;
+   gameDragging=true;
+   dragOffset.x=x-o.x;
+   dragOffset.y=y-o.y;
+   updateGame();
+   gc.setPointerCapture(e.pointerId);
+   return;
+  }
+ }
+ gameSelected=-1;
+ updateGame();
+});
+
+gc.addEventListener("pointermove",e=>{
+ if(!gameDragging||gameSelected<0)return;
+ let r=gc.getBoundingClientRect();
+ let x=(e.clientX-r.left)*gc.width/r.width;
+ let y=(e.clientY-r.top)*gc.height/r.height;
+ let o=gameObjects[gameSelected];
+ if(gameMode==="move"||gameMode==="select"){
+  o.x=x-dragOffset.x;
+  o.y=y-dragOffset.y;
+ }else if(gameMode==="resize"){
+  o.w=Math.max(10,x-o.x);
+  o.h=Math.max(10,y-o.y);
+ }
+ updateGame();
+});
+
+gc.addEventListener("pointerup",()=>gameDragging=false);
+gc.addEventListener("pointercancel",()=>gameDragging=false);
+
+/* GAME PREVIEW */
+let gameRunning=false;
+let gameAnimation=null;
+let playerKeys={};
+
+function playGame(){
+ if(gameRunning)return;
+ gameRunning=true;
+ $("preview").style.display="block";
+ drawPlayGame();
+ gameLoop();
+}
+
+function drawPlayGame(){
+ const pc=$("playCanvas");
+ const pctx=pc.getContext("2d");
+ pctx.fillStyle=gameBG;
+ pctx.fillRect(0,0,pc.width,pc.height);
+
+ gameObjects.forEach(o=>{
+  pctx.fillStyle=o.color;
+  if(o.type==="Circle"){
+   pctx.beginPath();
+   pctx.arc(o.x+o.w/2,o.y+o.h/2,o.w/2,0,Math.PI*2);
+   pctx.fill();
+  }else if(o.type==="Triangle"||o.type==="Mountain"){
+   pctx.beginPath();
+   pctx.moveTo(o.x+o.w/2,o.y);
+   pctx.lineTo(o.x+o.w,o.y+o.h);
+   pctx.lineTo(o.x,o.y+o.h);
+   pctx.closePath();
+   pctx.fill();
+  }else{
+   pctx.fillRect(o.x,o.y,o.w,o.h);
+  }
+ });
+}
+
+function gameLoop(){
+ if(!gameRunning)return;
+ let player=gameObjects.find(o=>o.type==="Player");
+ if(player){
+  if(playerKeys.ArrowLeft||playerKeys.a)player.x-=4;
+  if(playerKeys.ArrowRight||playerKeys.d)player.x+=4;
+ }
+ drawPlayGame();
+ gameAnimation=requestAnimationFrame(gameLoop);
+}
+
+document.addEventListener("keydown",e=>{
+ playerKeys[e.key]=true;
+ if(e.key===" "){
+  let p=gameObjects.find(o=>o.type==="Player");
+  if(p)p.y-=20;
+ }
+});
+
+document.addEventListener("keyup",e=>{
+ playerKeys[e.key]=false;
+});
+
+function stopGame(){
+ gameRunning=false;
+ if(gameAnimation)cancelAnimationFrame(gameAnimation);
+ $("preview").style.display="none";
+}
+
+/* MODEL ENGINE CONNECTION */
+let savedModels=JSON.parse(localStorage.getItem("SS_MODEL_LIBRARY")||"[]");
+let models=[];
+let modelSelected=-1;
+let modelRotation=0;
+let modelScale=1;
+
+const mc=$("modelCanvas");
+const mctx=mc.getContext("2d");
+
+function addModel(type){
+ let m={
+  name:type+" "+(models.length+1),
+  type:type,
+  color:"#39a2ff",
+  size:100,
+  rotation:0
+ };
+ models.push(m);
+ modelSelected=models.length-1;
+ updateModels();
+}
+
+function drawModels(){
+ mctx.clearRect(0,0,mc.width,mc.height);
+ mctx.fillStyle="#172b42";
+ mctx.fillRect(0,0,mc.width,mc.height);
+
+ models.forEach((m,i)=>{
+  let size=m.size*modelScale;
+  let x=mc.width/2-size/2;
+  let y=mc.height/2-size/2;
+
+  mctx.save();
+  mctx.translate(mc.width/2,mc.height/2);
+  mctx.rotate((modelRotation+m.rotation)*Math.PI/180);
+  mctx.fillStyle=m.color;
+  mctx.strokeStyle=i===modelSelected?"white":"#071426";
+  mctx.lineWidth=3;
+
+  if(m.type==="Sphere"){
+   mctx.beginPath();
+   mctx.arc(0,0,size/2,0,Math.PI*2);
+   mctx.fill();
+   mctx.stroke();
+  }else if(m.type==="Cylinder"){
+   mctx.fillRect(-size/3,-size/2,size*2/3,size);
+   mctx.strokeRect(-size/3,-size/2,size*2/3,size);
+  }else if(m.type==="Pyramid"){
+   mctx.beginPath();
+   mctx.moveTo(0,-size/2);
+   mctx.lineTo(size/2,size/2);
+   mctx.lineTo(-size/2,size/2);
+   mctx.closePath();
+   mctx.fill();
+   mctx.stroke();
+  }else{
+   mctx.fillRect(-size/2,-size/2,size,size);
+   mctx.strokeRect(-size/2,-size/2,size,size);
+  }
+  mctx.restore();
+ });
+}
+
+function updateModels(){
+ drawModels();
+ $("modelLibrary").innerHTML="";
+ models.forEach((m,i)=>{
+  let d=document.createElement("div");
+  d.className="library-item";
+  d.textContent=m.name;
+  d.onclick=()=>{
+   modelSelected=i;
+   updateModels();
+  };
+  $("modelLibrary").appendChild(d);
+ });
+
+ let m=models[modelSelected];
+ if(m){
+  $("mName").value=m.name;
+  $("mColor").value=m.color;
+  $("mSize").value=m.size;
+  $("modelInfo").textContent="Name: "+m.name+"\nType: "+m.type;
+ }else{
+  $("modelInfo").textContent="कोई Model Selected नहीं है।";
+ }
+}
+
+function editModel(key,value){
+ let m=models[modelSelected];
+ if(!m)return;
+ if(key==="name")m.name=value;
+ if(key==="color")m.color=value;
+ if(key==="size")m.size=Math.max(10,Number(value)||10);
+ updateModels();
+}
+
+function deleteModel(){
+ if(modelSelected<0)return;
+ models.splice(modelSelected,1);
+ modelSelected=Math.min(modelSelected,models.length-1);
+ updateModels();
+}
+
+function rotateModel(value){
+ modelRotation+=value;
+ drawModels();
+}
+
+function scaleModel(value){
+ modelScale*=value;
+ modelScale=Math.max(.3,Math.min(3,modelScale));
+ drawModels();
+}
+
+function saveModel(){
+ let m=models[modelSelected];
+ if(!m){
+  alert("पहले Model बनाएं");
+  return;
+ }
+ savedModels.push({...m});
+ localStorage.setItem("SS_MODEL_LIBRARY",JSON.stringify(savedModels));
+ renderModelLibrary();
+ $("modelInfo").textContent="Model Library में सेव हो गया।";
+}
+
+function renderModelLibrary(){
+ $("modelLibrary").innerHTML="";
+ savedModels.forEach((m,i)=>{
+  let d=document.createElement("div");
+  d.className="library-item";
+  d.textContent="📦 "+m.name;
+  d.onclick=()=>{
+   models.push({...m});
+   modelSelected=models.length-1;
+   updateModels();
+  };
+  $("modelLibrary").appendChild(d);
+ });
+}
+
+function exportModel(){
+ let m=models[modelSelected];
+ if(!m){
+  alert("पहले Model बनाएं");
+  return;
+ }
+ downloadFile("SS-Model.json",JSON.stringify(m,null,2));
+}
+
+function sendModelToGame(){
+ let m=models[modelSelected];
+ if(!m){
+  alert("पहले Model चुनें");
+  return;
+ }
+ openEngine("GAME");
+ addGameObject("Rectangle");
+ let o=gameObjects[gameSelected];
+ o.name=m.name+" (2D Placeholder)";
+ o.color=m.color;
+ updateGame();
+ gameStatus("2D MODEL PLACEHOLDER ADDED");
+}
+
+function importModelToGame(){
+ let m=savedModels[0];
+ if(!m){
+  alert("पहले Model Engine में Model सेव करें");
+  return;
+ }
+ openEngine("GAME");
+ addGameObject("Rectangle");
+ let o=gameObjects[gameSelected];
+ o.name=m.name+" (2D Placeholder)";
+ o.color=m.color;
+ updateGame();
+}
+
+function importModelFile(event){
+ let file=event.target.files[0];
+ if(!file)return;
+
+ if(!file.name.toLowerCase().endsWith(".json")){
+  alert("इस संस्करण में केवल JSON Model Project लोड होता है।");
+  event.target.value="";
+  return;
+ }
+
+ let reader=new FileReader();
+ reader.onload=()=>{
+  try{
+   let data=JSON.parse(reader.result);
+   if(Array.isArray(data)){
+    models=data;
+   }else{
+    models.push(data);
+   }
+   modelSelected=models.length-1;
+   updateModels();
+   alert("JSON Model Project Loaded");
+  }catch(e){
+   alert("गलत JSON फाइल");
+  }
+ };
+ reader.readAsText(file);
+ event.target.value="";
+}
+
+/* AI ENGINE */
+let aiMode="chat";
+let aiProjects=JSON.parse(localStorage.getItem("SS_AI_PROJECTS")||"[]");
+
+function runLocalAI(){
+ let q=$("aiQuestion").value.trim();
+ if(!q){
+  $("aiResult").textContent="पहले अपना सवाल लिखें।";
+  return;
+ }
+
+ let answer="यह Local Demo Assistant है। असली AI उत्तर के लिए AI Model Runtime या Server की जरूरत होगी।";
+
+ if(aiMode==="prompt"){
+  answer="PROMPT:\n"+q+"\n\nकृपया इस निर्देश के अनुसार एक स्पष्ट और उपयोगी परिणाम तैयार करें।";
+ }else if(aiMode==="research"){
+  answer="RESEARCH PROJECT\n\nविषय: "+q+"\n\nइस विषय पर शोध करने के लिए मुख्य प्रश्न, स्रोत और निष्कर्ष इकट्ठा करें। अभी इंटरनेट रिसर्च कनेक्शन उपलब्ध नहीं है।";
+ }else if(aiMode==="dataset"){
+  answer="DATASET NOTE SAVED:\n"+q;
+ }else if(q.toLowerCase().includes("hello")||q.includes("नमस्ते")){
+  answer="नमस्ते! SS ENGINE Local Assistant में आपका स्वागत है।";
+ }else if(q.toLowerCase().includes("game")||q.includes("गेम")){
+  answer="GAME DEVELOPMENT:\nआप Game Engine में Scene, Player, Objects और Levels बना सकते हैं।";
+ }else{
+  answer="आपका सवाल प्राप्त हुआ:\n"+q+"\n\nयह Demo Assistant है, अभी वास्तविक AI मॉडल से जुड़ा नहीं है।";
+ }
+
+ $("aiResult").textContent=answer;
+}
+
+function saveAIText(){
+ let text=$("aiQuestion").value;
+ if(!text){
+  alert("पहले Notes लिखें");
+  return;
+ }
+ localStorage.setItem("SS_AI_NOTES",text);
+ alert("AI Notes सेव हो गए।");
+}
+
+function saveAIProject(){
+ let name=$("aiProjectName").value.trim()||"My AI Project";
+ let project={
+  name:name,
+  notes:$("aiQuestion").value,
+  date:new Date().toLocaleString()
+ };
+ aiProjects.push(project);
+ localStorage.setItem("SS_AI_PROJECTS",JSON.stringify(aiProjects));
+ renderAIProjects();
+ alert("AI Project Saved");
+}
+
+function renderAIProjects(){
+ $("aiProjects").innerHTML="";
+ aiProjects.forEach(p=>{
+  let d=document.createElement("div");
+  d.className="library-item";
+  d.textContent="🧠 "+p.name;
+  d.onclick=()=>{
+   $("aiQuestion").value=p.notes;
+  };
+  $("aiProjects").appendChild(d);
+ });
+}
+
+function downloadAIProject(){
+ downloadFile("SS-AI-Projects.json",JSON.stringify(aiProjects,null,2));
+}
+
+/* APP ENGINE */
+let appElements=[];
+let appSelected=-1;
+
+function addAppElement(type){
+ let item={
+  type:type,
+  text:type==="Heading"?"My Heading":
+       type==="Text"?"My Text":
+       type==="Button"?"Click Me":
+       type==="Input"?"Enter Text":
+       type==="Image"?"Image URL":"My Card",
+  color:"#18283d"
+ };
+ appElements.push(item);
+ appSelected=appElements.length-1;
+ renderApp();
+}
+
+function renderApp(){
+ let preview=$("appPreview");
+ preview.innerHTML="";
+ let title=document.createElement("h2");
+ title.textContent=$("appName").value||"My SS App";
+ preview.appendChild(title);
+
+ $("appHierarchy").innerHTML="";
+
+ appElements.forEach((item,i)=>{
+  let el;
+  if(item.type==="Heading")el=document.createElement("h2");
+  else if(item.type==="Text")el=document.createElement("p");
+  else if(item.type==="Button")el=document.createElement("button");
+  else if(item.type==="Input")el=document.createElement("input");
+  else if(item.type==="Image"){
+   el=document.createElement("img");
+   el.src=item.text;
+   el.style.maxWidth="100%";
+  }else{
+   el=document.createElement("div");
+   el.style.padding="18px";
+   el.style.margin="8px 0";
+   el.style.background="#e3eaf3";
+  }
+
+  if(item.type!=="Input"&&item.type!=="Image")el.textContent=item.text;
+  if(item.type==="Input")el.placeholder=item.text;
+  el.style.color=item.color;
+  el.style.margin="8px";
+  el.onclick=()=>{
+   appSelected=i;
+   $("appText").value=item.text;
+   $("appColor").value=item.color;
+   renderApp();
+  };
+  preview.appendChild(el);
+
+  let d=document.createElement("div");
+  d.className="object-item "+(i===appSelected?"selected":"");
+  d.textContent=item.type+": "+item.text;
+  d.onclick=()=>{
+   appSelected=i;
+   $("appText").value=item.text;
+   $("appColor").value=item.color;
+   renderApp();
+  };
+  $("appHierarchy").appendChild(d);
+ });
+}
+
+function editAppText(value){
+ if(appSelected<0)return;
+ appElements[appSelected].text=value;
+ renderApp();
+}
+
+function editAppColor(value){
+ if(appSelected<0)return;
+ appElements[appSelected].color=value;
+ renderApp();
+}
+
+function deleteAppElement(){
+ if(appSelected<0)return;
+ appElements.splice(appSelected,1);
+ appSelected=-1;
+ renderApp();
+}
+
+function saveApp(){
+ localStorage.setItem("SS_APP_PROJECT",JSON.stringify({
+  name:$("appName").value,
+  elements:appElements
+ }));
+ alert("App Project Saved");
+}
+
+function exportApp(){
+ let html=`<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${$("appName").value}</title>
+</head>
+<body>
+<h2>${$("appName").value}</h2>
+${appElements.map(item=>{
+ if(item.type==="Heading")return `<h2>${item.text}</h2>`;
+ if(item.type==="Text")return `<p>${item.text}</p>`;
+ if(item.type==="Button")return `<button>${item.text}</button>`;
+ if(item.type==="Input")return `<input placeholder="${item.text}">`;
+ if(item.type==="Image")return `<img src="${item.text}" style="max-width:100%">`;
+ return `<div style="padding:18px">${item.text}</div>`;
+}).join("\n")}
+</body>
+</html>`;
+ downloadFile("SS-App.html",html,"text/html");
+}
+
+/* STARTUP */
+renderModelLibrary();
+renderAIProjects();
+drawGame();
+updateGame();
+drawModels();
+renderApp();
+
+</script>
+</body>
+</html> 
