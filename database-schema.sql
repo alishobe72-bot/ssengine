@@ -1,0 +1,42 @@
+-- SS ENGINE DATABASE STRUCTURE
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    salt TEXT NOT NULL,
+    plan VARCHAR(50) DEFAULT 'free',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS ai_usage (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    messages_used INTEGER DEFAULT 0,
+    credits_used INTEGER DEFAULT 0,
+    usage_date DATE DEFAULT CURRENT_DATE
+);
+
+CREATE TABLE IF NOT EXISTS wallets (
+    user_id BIGINT PRIMARY KEY REFERENCES users(id),
+    balance BIGINT DEFAULT 0,
+    currency VARCHAR(10) DEFAULT 'INR'
+);
+
+CREATE TABLE IF NOT EXISTS credit_transactions (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    amount INTEGER NOT NULL,
+    transaction_type VARCHAR(20) NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS payment_transactions (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id),
+    gateway_reference VARCHAR(255) UNIQUE,
+    amount_paise BIGINT NOT NULL,
+    payment_status VARCHAR(30) DEFAULT 'pending',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
