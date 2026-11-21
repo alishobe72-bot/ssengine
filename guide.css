@@ -1,0 +1,181 @@
+/* =====================================
+   SS LIVE AI GUIDE - MAIN DESIGN
+===================================== */
+
+#ss-live-guide,
+.ss-live-guide {
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.ss-guide-button {
+  position: fixed;
+  right: 18px;
+  bottom: 20px;
+  z-index: 99990;
+  border: 0;
+  border-radius: 30px;
+  padding: 14px 20px;
+  background: #80e68a;
+  color: #10251a;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 5px 25px #0008;
+}
+
+.ss-guide-panel {
+  position: fixed;
+  z-index: 99999;
+  right: 12px;
+  bottom: 80px;
+  width: min(380px, calc(100vw - 24px));
+  height: min(570px, calc(100vh - 110px));
+  background: #101b2d;
+  color: white;
+  border: 1px solid #34465f;
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 40px #000a;
+}
+
+.ss-guide-header {
+  padding: 15px;
+  background: #172942;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ss-guide-title {
+  font-size: 17px;
+  font-weight: bold;
+  color: #8df39a;
+}
+
+.ss-guide-close {
+  border: 0;
+  background: transparent;
+  color: white;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.ss-guide-avatar {
+  min-height: 155px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #203d59, #101b2d);
+}
+
+.ss-guide-avatar img {
+  width: 125px;
+  height: 125px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #80e68a;
+}
+
+.ss-guide-avatar-placeholder {
+  font-size: 65px;
+}
+
+.ss-guide-status {
+  padding: 8px;
+  text-align: center;
+  color: #8df39a;
+  font-size: 12px;
+}
+
+.ss-guide-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.ss-guide-message {
+  padding: 11px 13px;
+  margin: 8px 0;
+  border-radius: 13px;
+  max-width: 90%;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.ss-guide-message.bot {
+  background: #243b55;
+  margin-right: auto;
+}
+
+.ss-guide-message.user {
+  background: #246b43;
+  margin-left: auto;
+}
+
+.ss-guide-input-area {
+  padding: 12px;
+  background: #172942;
+}
+
+.ss-guide-input-row {
+  display: flex;
+  gap: 7px;
+}
+
+.ss-guide-input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #52657d;
+  border-radius: 12px;
+  background: #0d1726;
+  color: white;
+  outline: none;
+}
+
+.ss-guide-send,
+.ss-guide-action {
+  border: 0;
+  border-radius: 11px;
+  padding: 11px 13px;
+  background: #80e68a;
+  color: #10251a;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.ss-guide-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 9px;
+}
+
+.ss-guide-action {
+  flex: 1;
+  background: #29445e;
+  color: white;
+}
+
+.ss-guide-action.active {
+  background: #80e68a;
+  color: #10251a;
+}
+
+.ss-guide-panel button:focus-visible,
+.ss-guide-panel input:focus-visible {
+  outline: 2px solid #80e68a;
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .ss-guide-panel {
+    right: 8px;
+    bottom: 75px;
+    width: calc(100vw - 16px);
+    height: min(570px, calc(100vh - 95px));
+  }
+}
