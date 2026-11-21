@@ -10,6 +10,10 @@ const helmet = require("helmet");
 
 const AI_PROVIDERS = require("./ai-providers");
 const aiRoutes = require("./ai-routes");
+const authRoutes = require("./auth-routes");
+
+const { connectDatabase } = require("./database");
+const { createUsersTable } = require("./user-model");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,10 +38,13 @@ app.use(cors({
 }));
 
 app.use(helmet());
-app.use(express.json({ limit: "1mb" }));
+
+app.use(express.json({
+  limit: "1mb"
+}));
 
 // ======================================
-// HOME / SERVER STATUS
+// HOME
 // ======================================
 
 app.get("/", (req, res) => {
@@ -74,13 +81,22 @@ app.get("/api/status", (req, res) => {
 });
 
 // ======================================
-// AI ROUTES
+// AI API ROUTES
 // ======================================
 
 app.use("/api", aiRoutes);
 
 // ======================================
-// 404 ROUTE
+// AUTHENTICATION API ROUTES
+// ======================================
+
+app.use("/api/auth", authRoutes);
+
+// Signup: POST /api/auth/signup
+// Login:  POST /api/auth/login
+
+// ======================================
+// 404 NOT FOUND
 // ======================================
 
 app.use((req, res) => {
@@ -91,7 +107,7 @@ app.use((req, res) => {
 });
 
 // ======================================
-// ERROR HANDLER
+// GLOBAL ERROR HANDLER
 // ======================================
 
 app.use((error, req, res, next) => {
@@ -107,6 +123,26 @@ app.use((error, req, res, next) => {
 // START SERVER
 // ======================================
 
-app.listen(PORT, () => {
-  console.log(`SS ENGINE running on port ${PORT}`);
-});
+async function startServer() {
+  try {
+    await connectDatabase();
+
+    await createUsersTable();
+
+    app.listen(PORT, () => {
+      console.log(
+        `SS ENGINE Backend running on port ${PORT}`
+      );
+    });
+
+  } catch (error) {
+    console.error(
+      "SS ENGINE Startup Failed:",
+      error.message
+    );
+
+    process.exit(1);
+  }
+}
+
+startServer();
