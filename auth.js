@@ -3,13 +3,115 @@
 // ======================================
 
 const crypto = require("crypto");
+const { promisify } = require("util");
+
+const scrypt = promisify(crypto.scrypt);
+
 const {
   createUser,
   findUserByEmail
 } = require("./user-model");
 
-const { promisify } = require("util");
-const scrypt = promisify(crypto.scrypt);
+// ======================================
+// TOKEN CONFIGURATION
+// ======================================
+
+const TOKEN_LIFETIME = 7 * 24 * 60 * 60;
+
+function getSecret() {
+  const secret = process.env.AUTH_TOKEN_SECRET;
+
+  if (!secret || secret.length < 32) {
+    throw new Error("AUTH_TOKEN_SECRET must be at least 32 characters");
+  }
+
+  return secret;
+}
+
+// ======================================
+// TOKEN GENERATION
+// ======================================
+
+function createToken(userId) {
+  const now = Math.floor(Date.now() / 1000);
+
+  const payload = {
+    sub: String(userId),
+    iat: now,
+    exp: now + TOKEN_LIFETIME
+  };
+
+  const encoded = Buffer
+    .from(JSON.stringify(payload))
+    .toString("base64url");
+
+  const signature = crypto
+    .createHmac("sha256", getSecret())
+    .update(encoded)
+    .digest("base64url");
+
+  return encoded + "." + signature;
+}
+
+// ======================================
+// TOKEN VERIFICATION
+// ======================================
+
+function verifyToken(token) {
+  if (typeof token !== "string") {
+    throw new Error("Invalid token");
+  }
+
+  const parts = token.split(".");
+
+  if (parts.length !== 2) {
+    throw new Error("Invalid token");
+  }
+
+  const [encoded, receivedSignature] = parts;
+
+  const expectedSignature = crypto
+    .createHmac("sha256", getSecret())
+    .update(encoded)
+    .digest();
+
+  const actualSignature = Buffer.from(
+    receivedSignature,
+    "base64url"
+  );
+
+  if (
+    actualSignature.length !== expectedSignature.length ||
+    !crypto.timingSafeEqual(actualSignature, expectedSignature)
+  ) {
+    throw new Error("Invalid token");
+  }
+
+  const payload = JSON.parse(
+    Buffer.from(encoded, "base64url").toString("utf8")
+  );
+
+  const now = Math.floor(Date.now() / 1000);
+
+  if (
+    !payload.sub ||
+    !Number.isSafeInteger(payload.exp) ||
+    payload.exp <= now
+  ) {
+    throw new Error("Token expired or invalid");
+  }
+
+  return payload;
+}
+
+// ======================================
+// PASSWORD HASHING
+// ======================================
+
+async function hashPassword(password, salt) {
+  const hash = await scrypt(password, salt, 64);
+  return hash.toString("hex");
+}
 
 // ======================================
 // EMAIL VALIDATION
@@ -17,15 +119,6 @@ const scrypt = promisify(crypto.scrypt);
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-
-// ======================================
-// PASSWORD HASH
-// ======================================
-
-async function hashPassword(password, salt) {
-  const hash = await scrypt(password, salt, 64);
-  return hash.toString("hex");
 }
 
 // ======================================
@@ -66,10 +159,16 @@ async function signup(email, password) {
     salt
   });
 
+  const token = createToken(user.id);
+
   return {
-    id: user.id,
-    email: user.email,
-    plan: user.plan
+    success: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      plan: user.plan
+    },
+    token
   };
 }
 
@@ -115,10 +214,16 @@ async function login(email, password) {
     throw new Error("Invalid email or password");
   }
 
+  const token = createToken(user.id);
+
   return {
-    id: user.id,
-    email: user.email,
-    plan: user.plan
+    success: true,
+    user: {
+      id: user.id,
+      email: user.email,
+      plan: user.plan
+    },
+    token
   };
 }
 
@@ -128,5 +233,6 @@ async function login(email, password) {
 
 module.exports = {
   signup,
-  login
+  login,
+  verifyToken
 };
