@@ -1,35 +1,70 @@
+// ======================================
 // SS ENGINE - USER AUTHENTICATION
+// ======================================
 
 const crypto = require("crypto");
+const {
+  createUser,
+  findUserByEmail
+} = require("./user-model");
 
-const users = new Map();
+const { promisify } = require("util");
+const scrypt = promisify(crypto.scrypt);
 
-function signup(email, password) {
-  if (!email || !password || password.length < 8) {
+// ======================================
+// EMAIL VALIDATION
+// ======================================
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+// ======================================
+// PASSWORD HASH
+// ======================================
+
+async function hashPassword(password, salt) {
+  const hash = await scrypt(password, salt, 64);
+  return hash.toString("hex");
+}
+
+// ======================================
+// SIGNUP
+// ======================================
+
+async function signup(email, password) {
+  if (
+    typeof email !== "string" ||
+    typeof password !== "string"
+  ) {
     throw new Error("Valid email and password required");
   }
 
   const normalizedEmail = email.trim().toLowerCase();
 
-  if (users.has(normalizedEmail)) {
+  if (!isValidEmail(normalizedEmail)) {
+    throw new Error("Invalid email address");
+  }
+
+  if (password.length < 8 || password.length > 128) {
+    throw new Error("Password must be 8 to 128 characters");
+  }
+
+  const existingUser = await findUserByEmail(normalizedEmail);
+
+  if (existingUser) {
     throw new Error("User already exists");
   }
 
   const salt = crypto.randomBytes(16).toString("hex");
 
-  const passwordHash = crypto
-    .scryptSync(password, salt, 64)
-    .toString("hex");
+  const passwordHash = await hashPassword(password, salt);
 
-  const user = {
-    id: crypto.randomUUID(),
+  const user = await createUser({
     email: normalizedEmail,
-    salt,
     passwordHash,
-    plan: "free"
-  };
-
-  users.set(normalizedEmail, user);
+    salt
+  });
 
   return {
     id: user.id,
@@ -38,21 +73,44 @@ function signup(email, password) {
   };
 }
 
-function login(email, password) {
-  const normalizedEmail = String(email || "").trim().toLowerCase();
-  const user = users.get(normalizedEmail);
+// ======================================
+// LOGIN
+// ======================================
 
-  if (!user || typeof password !== "string") {
+async function login(email, password) {
+  if (
+    typeof email !== "string" ||
+    typeof password !== "string"
+  ) {
     throw new Error("Invalid email or password");
   }
 
-  const hash = crypto.scryptSync(password, user.salt, 64);
+  const normalizedEmail = email.trim().toLowerCase();
 
-  const savedHash = Buffer.from(user.passwordHash, "hex");
+  const user = await findUserByEmail(normalizedEmail);
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  const passwordHash = await hashPassword(
+    password,
+    user.salt
+  );
+
+  const savedHash = Buffer.from(
+    user.password_hash,
+    "hex"
+  );
+
+  const enteredHash = Buffer.from(
+    passwordHash,
+    "hex"
+  );
 
   if (
-    hash.length !== savedHash.length ||
-    !crypto.timingSafeEqual(hash, savedHash)
+    savedHash.length !== enteredHash.length ||
+    !crypto.timingSafeEqual(savedHash, enteredHash)
   ) {
     throw new Error("Invalid email or password");
   }
@@ -64,4 +122,11 @@ function login(email, password) {
   };
 }
 
-module.exports = { signup, login };
+// ======================================
+// EXPORT
+// ======================================
+
+module.exports = {
+  signup,
+  login
+};
